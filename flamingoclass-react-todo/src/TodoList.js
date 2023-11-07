@@ -1,16 +1,16 @@
 import React from "react";
 import TodoListItem from "./TodoListItem";
-import {useSemiPersistentState} from "./App";
 
-function TodoList({ todoList }) {
+
+function TodoList({ todoList, onRemoveTodo }) {
   const listStyle = {
-    textAlign: "center", // Center-align the items within the TodoList
+    textAlign: "left", // Center-align the items within the TodoList
   };
 
   return (
     <ul style={listStyle}>
       {todoList.map((todo) => (
-        <TodoListItem key={todo.id} todo={todo} />
+        <TodoListItem key={todo.id} todo={todo} onRemoveTodo={onRemoveTodo} />
       ))}
     </ul>
   );

@@ -4,9 +4,10 @@ import AddTodoForm from "./AddTodoForm";
 import './App.css';
 
 
-function useSemiPersistentState  () {
-  const [todoList, setTodoList] = useState([]);
-  // Load saved data from local storage
+function App() {
+  const [todoList , setTodoList] = useState([]);
+  const [isLoading, setIsLoading]  = useState(true);
+
   useEffect(() => {
     // Retrieve the serialized todoList from local storage
     const savedTodoListJSON = localStorage.getItem("savedTodoList");
@@ -18,13 +19,29 @@ function useSemiPersistentState  () {
       // If data exists in local storage, set it as the initial state
       setTodoList(savedTodoList);
     }
-  }, []);
-  return [todoList, setTodoList];
-}
 
- 
-function App() {
-  const [todoList , setTodoList] = useSemiPersistentState();
+    const newPromise = new Promise((resolve, reject) => {
+      const fetchData = () => {
+          const success = true;
+            if(success) {
+              resolve({data : {todoList: savedTodoList || [] } })
+            }else{
+              reject("Failed to fetch data")
+            }
+        };
+        setTimeout(fetchData, 2000)
+    });
+
+    newPromise
+      .then((result) => {
+        setTodoList(result.data.todoList)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+
+  }, []);
 
   const removeTodo=(id) =>{
     const updatedTodoList = todoList.filter((todo) => todo.id !== id);
@@ -37,6 +54,9 @@ function App() {
 
   // Save todoList to local storage whenever it changes
   useEffect(() => {
+    if(!isLoading){
+      console.log("false")
+    }
     // Convert the todoList to a JSON string
     const todoListJSON = JSON.stringify(todoList);
 
@@ -46,10 +66,10 @@ function App() {
 
   return (
   <>
-    <div className="App">
+   <div className="App">
       <div className="box">
         <h1>Todo List</h1>
-        <TodoList todoList={todoList} onRemoveTodo= {removeTodo} />
+        {isLoading ? <p>Loading...</p> : <TodoList todoList={todoList} onRemoveTodo={removeTodo} />}
         <AddTodoForm onAddTodo={addTodo} />
       </div>
     </div>

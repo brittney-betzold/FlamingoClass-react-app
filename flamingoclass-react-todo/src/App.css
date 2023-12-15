@@ -1,3 +1,14 @@
+
+*{
+   
+    margin:0px;
+    padding:0px;
+}
+body {
+    background: url("../src/wp5542902-react-native-wallpapers.png") fixed no-repeat;
+    margin-bottom: 150px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 .App{
     text-align:center;
 }
@@ -6,30 +17,47 @@ p{
     text-align: center;
 }
 .box{
+    background-color: rgba(127, 162, 196, 0.7);
     max-width: 400px;
     margin:auto;
     border-radius: 5px;
     box-shadow: rgba(0,0,0,0.16) 0px 1px 1px 4px;
     padding: 10px;
-    margin-top:100px;
+    margin-top:200px;
 }
-button.add{
-    padding: 8px;
-    margin:10px;
+button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     font-size: 16px;
-    color: #036008;
-};
-button.remove {
-    font-size: 360px;
-    padding:5px;
-    margin:80px;
-
-};
-*{
-    font-family: Arial, Helvetica, sans-serif;
-    margin:0px;
-    padding:0px;
+    margin: 10px;
 }
+
+button.add {
+    color: black;
+    background-color: #75efef;
+}
+
+button.remove {
+    color: white;
+    background-color: #f44336;
+}
+
+button:hover {
+    filter: brightness(90%);
+}
+
+button.add:hover {
+    background-color: #3368a5;
+}
+
+button.remove:hover {
+    background-color: #d32f2f;
+}
+
+
+
 h1 {
     text-align: center;
   }
@@ -39,7 +67,34 @@ h1 {
     margin: 10px; 
   }
   .add-todo-form {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bolder;
+    font-size: 20px;
     text-align: center;
     margin: 0 auto; 
     max-width: 200px; 
   }
+  .add-todo-form input {
+    flex: 1;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .add-todo-form input::placeholder {
+    color: #999;
+}
+.add-todo-form input:focus {
+    border-color: #4a59ba;
+    outline: none; /* Remove the default focus outline */
+}
+
+.add-todo-form button.add{
+    font-weight: bold;
+    padding: 8px 15px;
+    font-size: 16px;
+    color:#0e1111
+}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import TodoList from "./TodoList";
 import AddTodoForm from "./AddTodoForm";
+import './TodoListItem.module.css';
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 async function fetchData(setTodoList, setIsLoading) {
   const savedTodoListJSON = localStorage.getItem("savedTodoList");
@@ -120,7 +122,11 @@ function App() {
   
   const handleAddTodo = async (newTodo) => {
     try {
-      // Optimistically update UI
+      const tempId = `tempId-${Date.now()}`;
+      const todoWithId = { id: tempId, title: newTodo.title };
+      setTodoList((prevTodoList) => [...prevTodoList, todoWithId]);
+
+      // update UI
       setTodoList((prevTodoList) => [...prevTodoList, { id: 'tempId', title: newTodo.title }]);
   
       // Add the new todo to Airtable
@@ -148,23 +154,33 @@ function App() {
 
   // Render when data is available
   return (
-    <>
-      <div className="App">
-        <div className="box">
-          <h1>Todo List</h1>
-          {todoList.length === 0 ? (
-            <p>No todos available. Add some todos!</p>
-          ) : (
-            <TodoList
-              className="todoList"
-              todoList={todoList}
-              onRemoveTodo={removeTodo}
-            />
-          )}
-          <AddTodoForm onAddTodo={handleAddTodo} />
-        </div>
-      </div>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/"  element={
+          <div className="App">
+            <div className="box">
+              <h1>Todo List</h1>
+              {todoList.length === 0 ? (
+                <p>No todos available. Add some todos!</p>
+              ) : (
+                <TodoList
+                  className="todoList"
+                  todoList={todoList}
+                  onRemoveTodo={removeTodo}
+                />
+              )}
+              <AddTodoForm onAddTodo={handleAddTodo} />
+            </div>
+          </div>
+        } />
+        <Route path = "/new"  element={
+          <div>
+            <h1> New todo List</h1>
+          </div>
+        }
+        />
+      </Routes>
+    </Router>
   );
 }
 

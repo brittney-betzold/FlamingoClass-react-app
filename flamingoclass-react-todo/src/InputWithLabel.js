@@ -15,6 +15,7 @@ React.useEffect(() => {
           onChange={handleTitleChange}
           placeholder="Add a new todo"
           ref = {inputRef}
+          id= "todoTitle"
         />
       </>
     );

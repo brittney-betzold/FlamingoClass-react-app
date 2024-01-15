@@ -123,12 +123,10 @@ function App() {
   const handleAddTodo = async (newTodo) => {
     try {
       const tempId = `tempId-${Date.now()}`;
-      const todoWithId = { id: tempId, title: newTodo.title };
-      setTodoList((prevTodoList) => [...prevTodoList, todoWithId]);
+      // const todoWithId = { id: tempId, title: newTodo.title };
 
-      // update UI
-      setTodoList((prevTodoList) => [...prevTodoList, { id: 'tempId', title: newTodo.title }]);
-  
+      setTodoList((prevTodoList) => [...prevTodoList, { id: tempId, title: newTodo.title }]);
+
       // Add the new todo to Airtable
       const addedTodo = await addTodoToAirtable(newTodo);
   

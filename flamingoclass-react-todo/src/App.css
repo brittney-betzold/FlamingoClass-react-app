@@ -68,7 +68,7 @@
   
   .add-todo-form {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     font-weight: bolder;
     font-size: 20px;
@@ -101,7 +101,12 @@
     font-size: 16px;
     color: #0e1111;
   }
-
+@media screen and (max-width:280px) and (max-width:653px) {
+  .box {
+    width:90%;
+    margin:10%;
+  }
+}
   
   @media screen and (max-width: 375px) and (max-height: 667px) {
     .box {
@@ -113,7 +118,7 @@
   @media screen and (max-width: 414px) {
     .box {
       position: absolute;
-      margin-left: -10px;
+      margin-left: 40px;
       margin-right: 10%;
     }
     .add-todo-form{
@@ -136,7 +141,7 @@
     }
   
     button {
-      width: 100%;
+      width: 18%;
     }
   }
   
@@ -148,8 +153,10 @@
     }
   }
   
-  @media screen and (max-width: 912px) {
-    .box {
-    }
+  @media screen and (max-width: 912px) and (max-width:1368px) {
+ 
+    
+
+    
   }
   

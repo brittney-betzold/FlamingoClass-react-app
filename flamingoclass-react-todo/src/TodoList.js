@@ -3,15 +3,19 @@ import TodoListItem from "./TodoListItem";
 
 
 function TodoList({ todoList, onRemoveTodo }) {
-  const listStyle = {
-    textAlign: "left", // Center-align the items within the TodoList
-  };
+  const uniqueKeys = new Set();
 
   return (
-    <ul style={listStyle}>
-      {todoList.map((todo) => (
-        <TodoListItem key={todo.id} todo={todo} onRemoveTodo={onRemoveTodo} />
-      ))}
+    <ul>
+      {todoList.map((todo) => {
+        if (uniqueKeys.has(todo.id)) {
+          console.error(`Duplicate key found: ${todo.id}`);
+        } else {
+          uniqueKeys.add(todo.id);
+        }
+
+        return <TodoListItem key={todo.id} todo={todo} onRemoveTodo={onRemoveTodo} />;
+      })}
     </ul>
   );
 }

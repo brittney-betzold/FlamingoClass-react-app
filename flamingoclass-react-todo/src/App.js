@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import TodoList from "./TodoList";
-import AddTodoForm from "./AddTodoForm";
-import './TodoListItem.module.css';
-import './App.css';
+import TodoList from "./components/TodoList";
+import AddTodoForm from "./components/AddTodoForm";
+import './components/TodoListItem.module.css';
+import './components//App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 async function fetchData(setTodoList, setIsLoading) {

@@ -17,7 +17,7 @@ function AddTodoForm({ onAddTodo }) {
   };
 
   return (
-    <div className="add-todo-form"> {/* Add a CSS class for styling */}
+    <div className="add-todo-form">
        <InputWithLabel
              todoTitle={todoTitle}
              handleTitleChange={handleTitleChange}>

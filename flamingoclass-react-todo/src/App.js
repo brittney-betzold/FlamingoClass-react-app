@@ -9,6 +9,55 @@ const API_URL = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BA
 function App() {
     const [todoList, setTodoList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    const toggleSortOrder = () => {
+        const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        setSortOrder(newSortOrder);
+
+        // Call the function to fetch and sort data based on the new sort order
+        fetchDataAndInitialize(newSortOrder);
+    };
+
+    const fetchDataAndInitialize = async (sortOrder = 'asc') => {
+        try {
+            const options = {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+                },
+            };
+
+            const response = await fetch(`${API_URL}?sort[0][field]=title&sort[0][direction]=${sortOrder}`, options);
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Sort data.records before setting it in the state
+            const sortedTodos = data.records.sort((objectA, objectB) => {
+                const titleA = (objectA.fields.title || '').toUpperCase();
+                const titleB = (objectB.fields.title || '').toUpperCase();
+
+                if (titleA < titleB) return sortOrder === 'asc' ? -1 : 1;
+                if (titleA > titleB) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const todos = sortedTodos.map((record) => ({
+                title: record.fields.title,
+                id: record.id,
+            }));
+
+            setTodoList(todos);
+            setIsLoading(false);
+        } catch (error) {
+            console.error(error);
+            // setIsLoading(false);
+        }
+    };
 
     const handleAddTodo = async (newTodo) => {
         try {
@@ -34,7 +83,7 @@ function App() {
             }
 
             const addedTodo = await response.json();
-            
+
             // using the Airtable response data add new todo to state...
             setTodoList((prevTodoList) => [...prevTodoList, { title: addedTodo.fields.title, id: addedTodo.id }]);
         } catch (error) {
@@ -63,38 +112,8 @@ function App() {
     };
 
     useEffect(() => {
-        const fetchDataAndInitialize = async () => {
-            try {
-                const options = {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-                    },
-                };
-
-                const response = await fetch(API_URL, options);
-
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                const todos = data.records.map((record) => ({
-                    title: record.fields.title,
-                    id: record.id,
-                }));
-
-                setTodoList(todos);
-                setIsLoading(false);
-            } catch (error) {
-                console.error(error);
-                // setIsLoading(false);
-            }
-        };
-
-        fetchDataAndInitialize();
-    }, []);
+        fetchDataAndInitialize(sortOrder);  
+    }, [sortOrder]);  // Re-fetch when sort order changes
 
     // Render loading state
     if (isLoading) {
@@ -119,6 +138,7 @@ function App() {
                                 />
                             )}
                             <AddTodoForm onAddTodo={handleAddTodo} />
+                            <button onClick={toggleSortOrder}>Toggle Sort Order</button>
                         </div>
                     </div>
                 } />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TodoList from "./components/TodoList";
 import AddTodoForm from "./components/AddTodoForm";
 import './components/App.css';
@@ -83,7 +83,7 @@ function App() {
             }
 
             const addedTodo = await response.json();
-
+console.log("new Todo List", addedTodo)
             // using the Airtable response data add new todo to state...
             setTodoList((prevTodoList) => [...prevTodoList, { title: addedTodo.fields.title, id: addedTodo.id }]);
         } catch (error) {
@@ -122,35 +122,49 @@ function App() {
 
     // Render when data is available
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={
-                    <div className="App">
-                        <div className="box">
-                            <h1>Todo List</h1>
-                            {todoList.length === 0 ? (
-                                <p>No todos available. Add some todos!</p>
-                            ) : (
-                                <TodoList
-                                    className="todoList"
-                                    todoList={todoList}
-                                    onRemoveTodo={removeTodo}
-                                />
-                            )}
+      <Router>
+          <div>
+              <nav>
+                  <ul>
+                      <li>
+                          <Link to="/">Home</Link>
+                      </li>
+                      <li>
+                          <Link to="/new">New Page</Link>
+                      </li>
+                  </ul>
+              </nav>
+
+              <Routes>
+                  <Route path="/" element={
+                      <div className="App">
+                          <div className="box">
+                              <h1>Todo List</h1>
+                              {todoList.length === 0 ? (
+                                  <p>No todos available. Add some todos!</p>
+                              ) : (
+                                  <TodoList
+                                      className="todoList"
+                                      todoList={todoList}
+                                      onRemoveTodo={removeTodo}
+                                  />
+                              )}
+                              <AddTodoForm onAddTodo={handleAddTodo} />
+                              <button className = "toggle" onClick={toggleSortOrder}>Toggle Sort Order</button>
+                          </div>
+                      </div>
+                  } />
+                  <Route path="/new" element={
+                      <div>     
+                           <h1>New todo List</h1>
+                           <p>Enter the details for your new todo below:</p>
                             <AddTodoForm onAddTodo={handleAddTodo} />
-                            <button onClick={toggleSortOrder}>Toggle Sort Order</button>
-                        </div>
-                    </div>
-                } />
-                <Route path="/new" element={
-                    <div>
-                        <h1> New todo List</h1>
-                    </div>
-                }
-                />
-            </Routes>
-        </Router>
-    );
-}
+                      </div>
+                  } />
+              </Routes>
+          </div>
+      </Router>
+  );
+};
 
 export default App;

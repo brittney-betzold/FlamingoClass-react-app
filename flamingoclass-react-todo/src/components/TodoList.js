@@ -2,13 +2,21 @@ import React from "react";
 import TodoListItem from "./TodoListItem";
 import PropTypes from "prop-types";
 
-
 function TodoList({ todoList, onRemoveTodo }) {
   const uniqueKeys = new Set();
-
+  
+  if (todoList.length === 0) {
+    return <p>No todos available. Add some todos!</p>;
+  }
+  
   return (
     <ul>
       {todoList.map((todo) => {
+        if (!todo.title) {
+          // If todo title is empty or undefined, skip rendering it
+          return null;
+        }
+
         if (uniqueKeys.has(todo.id)) {
           console.error(`Duplicate key found: ${todo.id}`);
         } else {
@@ -24,13 +32,11 @@ function TodoList({ todoList, onRemoveTodo }) {
 TodoList.propTypes = {
   todoList: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired, // Adjust based on the actual data type
+      id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
     })
   ).isRequired,
   onRemoveTodo: PropTypes.func.isRequired,
 };
-
-
 
 export default TodoList;

@@ -3,34 +3,42 @@ import InputWithLabel from "./InputWithLabel";
 import PropTypes from "prop-types";
 
 function AddTodoForm({ onAddTodo }) {
-  const [todoTitle, setTodoTitle] = useState("");
+  const [title, setTitle] = useState("");
+  const [error, setError] = useState("");
 
   const handleTitleChange = (event) => {
-    setTodoTitle(event.target.value);
+    setTitle(event.target.value);
   };
 
-  const handleAddTodo = () => {
-    if (todoTitle.trim() !== "") {
-      onAddTodo({ id: Date.now(), title: todoTitle });
-      setTodoTitle("");
+  const handleAddTodo = (event) => {
+    event.preventDefault();
+    if (title.trim() === "") {
+      setError("Title cannot be empty");
+      return;
     }
+    onAddTodo(title);
+    setTitle("");
+    setError("");
   };
 
   return (
-    <div className="add-todo-form">
-       <InputWithLabel
-             todoTitle={todoTitle}
-             handleTitleChange={handleTitleChange}>
-             Title
-        </InputWithLabel>
-
-         <button className = "add" onClick={handleAddTodo}>Add</button>
-    </div>
+    <form className="add-todo-form" onSubmit={handleAddTodo}>
+      <InputWithLabel
+        todoTitle={title}
+        handleTitleChange={handleTitleChange}
+      >
+        Title
+      </InputWithLabel>
+      <button className="add" type="submit">
+        Add
+      </button>
+      {error && <p className="error">{error}</p>}
+    </form>
   );
 }
 
 AddTodoForm.propTypes = {
   onAddTodo: PropTypes.func.isRequired,
-}
+};
 
 export default AddTodoForm;

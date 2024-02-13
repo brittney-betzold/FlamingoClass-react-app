@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TodoList from "./components/TodoList";
 import AddTodoForm from "./components/AddTodoForm";
-import './components/App.css';
+import './App.css';
 
 const API_URL = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${process.env.REACT_APP_TABLE_NAME}`;
 
@@ -18,48 +18,57 @@ function App() {
         // Call the function to fetch and sort data based on the new sort order
         fetchDataAndInitialize(newSortOrder);
     };
-
     const fetchDataAndInitialize = async (sortOrder = 'asc') => {
-        try {
-            const options = {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
-                },
-            };
+      try {
+          const options = {
+              method: 'GET',
+              headers: {
+                  Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_API_TOKEN}`,
+              },
+          };
+  
+          const response = await fetch(`${API_URL}?sort[0][field]=title&sort[0][direction]=${sortOrder}`, options);
+  
+          if (!response.ok) {
+              throw new Error(`Error: ${response.status}`);
+          }
+  
+          const data = await response.json();
+  
+          if (!Array.isArray(data.records) || data.records.length === 0) {
+              console.error('No data or invalid data format received');
+              setIsLoading(false);
+              return;
+          }
+  
+          // Filter out records with empty titles
+          const filteredRecords = data.records.filter(record => record.fields.title);
+  
+          // Sort and process the filtered records
+          const sortedTodos = filteredRecords.sort((objectA, objectB) => {
+              const titleA = (objectA.fields.title || '').toUpperCase();
+              const titleB = (objectB.fields.title || '').toUpperCase();
+  
+              if (titleA < titleB) return sortOrder === 'asc' ? -1 : 1;
+              if (titleA > titleB) return sortOrder === 'asc' ? 1 : -1;
+              return 0;
+          });
+  
+          const todos = sortedTodos.map((record) => ({
+              title: record.fields.title,
+              id: record.id,
+          }));
+  
+          setTodoList(todos);
+          setIsLoading(false);
+      } catch (error) {
+          console.error(error);
+          setIsLoading(false);
+      }
+  };
+  
 
-            const response = await fetch(`${API_URL}?sort[0][field]=title&sort[0][direction]=${sortOrder}`, options);
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Sort data.records before setting it in the state
-            const sortedTodos = data.records.sort((objectA, objectB) => {
-                const titleA = (objectA.fields.title || '').toUpperCase();
-                const titleB = (objectB.fields.title || '').toUpperCase();
-
-                if (titleA < titleB) return sortOrder === 'asc' ? -1 : 1;
-                if (titleA > titleB) return sortOrder === 'asc' ? 1 : -1;
-                return 0;
-            });
-
-            const todos = sortedTodos.map((record) => ({
-                title: record.fields.title,
-                id: record.id,
-            }));
-
-            setTodoList(todos);
-            setIsLoading(false);
-        } catch (error) {
-            console.error(error);
-            // setIsLoading(false);
-        }
-    };
-
-    const handleAddTodo = async (newTodo) => {
+    const addTodo = async (title) => {
         try {
             const options = {
                 method: 'POST',
@@ -69,7 +78,7 @@ function App() {
                 },
                 body: JSON.stringify({
                     fields: {
-                        title: newTodo.title,
+                        title: title,
                     },
                 }),
             };
@@ -83,7 +92,7 @@ function App() {
             }
 
             const addedTodo = await response.json();
-console.log("new Todo List", addedTodo)
+
             // using the Airtable response data add new todo to state...
             setTodoList((prevTodoList) => [...prevTodoList, { title: addedTodo.fields.title, id: addedTodo.id }]);
         } catch (error) {
@@ -119,52 +128,53 @@ console.log("new Todo List", addedTodo)
     if (isLoading) {
         return <p>Loading...</p>;
     }
-
     // Render when data is available
-    return (
-      <Router>
-          <div>
-              <nav>
-                  <ul>
-                      <li>
-                          <Link to="/">Home</Link>
-                      </li>
-                      <li>
-                          <Link to="/new">New Page</Link>
-                      </li>
-                  </ul>
-              </nav>
+return (
+  <Router>
+      <div>
+          <nav>
+              <ul>
+                  <li>
+                      <Link to="/">Home</Link>
+                  </li>
+                  <li>
+                      <Link to="/new">New Page</Link>
+                  </li>
+              </ul>
+          </nav>
 
-              <Routes>
-                  <Route path="/" element={
-                      <div className="App">
-                          <div className="box">
-                              <h1>Todo List</h1>
-                              {todoList.length === 0 ? (
-                                  <p>No todos available. Add some todos!</p>
-                              ) : (
-                                  <TodoList
-                                      className="todoList"
-                                      todoList={todoList}
-                                      onRemoveTodo={removeTodo}
-                                  />
-                              )}
-                              <AddTodoForm onAddTodo={handleAddTodo} />
-                              <button className = "toggle" onClick={toggleSortOrder}>Toggle Sort Order</button>
-                          </div>
+          <Routes>
+              <Route path="/" element={
+                  <div className="App">
+                      <div className="box">
+                          <h1>{process.env.REACT_APP_TABLE_NAME}</h1>
+                          {todoList.length === 0 ? (
+                              <p>No todos available. Add some todos!</p>
+                          ) : (
+                              <TodoList
+                                  className="todoList"
+                                  todoList={todoList}
+                                  onRemoveTodo={removeTodo}
+                              />
+                          )}
+                          <AddTodoForm onAddTodo={addTodo} />
+                          <button className="toggle" onClick={toggleSortOrder}>Toggle Sort Order</button>
                       </div>
-                  } />
-                  <Route path="/new" element={
-                      <div>     
-                           <h1>New todo List</h1>
-                           <p>Enter the details for your new todo below:</p>
-                            <AddTodoForm onAddTodo={handleAddTodo} />
-                      </div>
-                  } />
-              </Routes>
-          </div>
-      </Router>
-  );
+                  </div>
+              } />
+              <Route path="/new" element={
+                  <div>
+                      <h1>{process.env.REACT_APP_TABLE_NAME}</h1>
+
+                      <p>Enter the details for your new todo below:</p>
+                      <AddTodoForm onAddTodo={addTodo} />
+                  </div>
+              } />
+          </Routes>
+      </div>
+  </Router>
+);
+
 };
 
 export default App;

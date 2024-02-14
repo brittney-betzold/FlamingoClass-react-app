@@ -12,7 +12,7 @@
   
   .box {
     position: absolute;
-    top: 50%;
+    top: 70%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgba(127, 162, 196, 0.7);
@@ -56,6 +56,10 @@
     margin: 10px;
   }
   nav {
+    position:fixed;
+    top:0;
+    width:100%;
+    z-index: 999;
     height: 50px; /* Adjust the height as needed */
     background-color: rgba(0, 0, 0, 0.5); /* Adjust the opacity here */
     display: flex;
